@@ -1,12 +1,6 @@
-# Reykal's 3D Room
+# Reykal's Room - Interactive 3D Experience
 
-This is a modern 3D room portfolio created with React, Vite, and Three.js (using React Three Fiber).
-
-## Features
-
-- A 3D room environment you can navigate.
-- A text element displaying "REYKAL ROOM".
-- An interactive picture frame where you can upload and display your own photo.
+This project is an interactive 3D room built with React, Three.js, and Tailwind CSS. Users can explore the room, view photos, and interact with elements in the scene.
 
 ## How to Run
 
@@ -15,14 +9,20 @@ This is a modern 3D room portfolio created with React, Vite, and Three.js (using
     npm install
     ```
 
-2.  **Start the development server:**
+2.  **Add your photos:**
+    Place your personal `.jpg` or `.png` photos inside the `public/photos/` directory.
+
+3.  **Run the development server:**
     ```bash
     npm run dev
     ```
 
-3.  Open your browser and navigate to the local URL provided by Vite (usually `http://localhost:5173`).
+4.  Open your browser and navigate to the provided local URL.
 
-## How to Use
+## Features
 
-- **Navigate:** Click and drag the mouse to look around the room.
-- **Upload Photo:** Click the "Upload Your Photo" button in the top-left corner to select an image file from your computer. The image will appear in the picture frame on the wall.
+-   **3D Room Navigation:** Use your mouse to look around and zoom.
+-   **Dynamic Photo Gallery:** Photos from the `public/photos` directory are automatically loaded and displayed in frames.
+-   **Interactive Elements:** Click on photo frames to focus on them.
+-   **Glowing Text:** A neon-style text element adds to the room's ambiance.
+-   **Modern Tech Stack:** Built with Vite, React, `@react-three/fiber`, and Zustand for a fast and scalable experience.

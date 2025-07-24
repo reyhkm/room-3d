@@ -1,54 +1,74 @@
 import * as THREE from 'three';
+import { useTexture } from '@react-three/drei';
+import { useStore } from '../store/useStore';
+import PhotoFrame from './PhotoFrame';
+import Label from './Label';
 
-const Wall = ({ position, rotation, size, color }) => (
-  <mesh position={position} rotation={rotation} receiveShadow>
-    <boxGeometry args={size} />
-    <meshStandardMaterial color={color} side={THREE.DoubleSide} />
-  </mesh>
-);
+export default function Room() {
+  const photos = useStore((state) => state.photos);
+  const setTarget = useStore((state) => state.setTarget);
 
-const Room = () => {
-  const roomSize = { width: 10, height: 5, depth: 10 };
+  const wallTexture = useTexture('/textures/wall_texture.jpg');
+  wallTexture.wrapS = wallTexture.wrapT = THREE.RepeatWrapping;
+  wallTexture.repeat.set(4, 4);
+
+  const floorTexture = useTexture('/textures/wood_floor.jpg');
+  floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+  floorTexture.repeat.set(8, 8);
+
+  const photoPositions = [
+    { position: [-4, 2.5, -5.9], rotation: [0, 0, 0] },
+    { position: [-1.5, 3, -5.9], rotation: [0, 0, 0] },
+    { position: [1.5, 2, -5.9], rotation: [0, 0, 0] },
+    { position: [4, 3.5, -5.9], rotation: [0, 0, 0] },
+    { position: [-5.9, 2, -2], rotation: [0, Math.PI / 2, 0] },
+    { position: [-5.9, 3.5, 1.5], rotation: [0, Math.PI / 2, 0] },
+  ];
 
   return (
     <group>
       {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-        <planeGeometry args={[roomSize.width, roomSize.depth]} />
-        <meshStandardMaterial color="#5c5c5c" />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow onClick={() => setTarget(null)}>
+        <planeGeometry args={[12, 12]} />
+        <meshStandardMaterial map={floorTexture} />
       </mesh>
 
-      {/* Ceiling */}
-      <mesh position={[0, roomSize.height, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[roomSize.width, roomSize.depth]} />
-        <meshStandardMaterial color="#c7c7c7" />
+      {/* Walls */}
+      <mesh position={[0, 3, -6]} receiveShadow>
+        <planeGeometry args={[12, 6]} />
+        <meshStandardMaterial map={wallTexture} />
+      </mesh>
+      <mesh position={[-6, 3, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[12, 6]} />
+        <meshStandardMaterial map={wallTexture} />
+      </mesh>
+      <mesh position={[6, 3, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[12, 6]} />
+        <meshStandardMaterial map={wallTexture} />
       </mesh>
 
-      {/* Back Wall */}
-      <Wall 
-        position={[0, roomSize.height / 2, -roomSize.depth / 2]} 
-        rotation={[0, 0, 0]} 
-        size={[roomSize.width, roomSize.height, 0.1]} 
-        color="#a0a0a0" 
-      />
+      {/* Simple Furniture */}
+      <mesh position={[-4, 1, 3]} castShadow>
+        <boxGeometry args={[4, 2, 5]} />
+        <meshStandardMaterial color="#333" />
+      </mesh>
+      <mesh position={[4, 0.75, -4]} castShadow>
+        <boxGeometry args={[3, 1.5, 2]} />
+        <meshStandardMaterial color="#444" />
+      </mesh>
 
-      {/* Left Wall */}
-      <Wall 
-        position={[-roomSize.width / 2, roomSize.height / 2, 0]} 
-        rotation={[0, Math.PI / 2, 0]} 
-        size={[roomSize.depth, roomSize.height, 0.1]} 
-        color="#b0b0b0" 
-      />
+      {/* Label */}
+      <Label />
 
-      {/* Right Wall */}
-      <Wall 
-        position={[roomSize.width / 2, roomSize.height / 2, 0]} 
-        rotation={[0, -Math.PI / 2, 0]} 
-        size={[roomSize.depth, roomSize.height, 0.1]} 
-        color="#b0b0b0" 
-      />
+      {/* Photo Frames */}
+      {photos.map((photo, index) => {
+        const config = photoPositions[index % photoPositions.length];
+        return <PhotoFrame key={index} textureUrl={photo} {...config} />;
+      })}
     </group>
   );
-};
+}
 
-export default Room;
+// Create placeholder textures if they don't exist
+useTexture.preload('/textures/wall_texture.jpg');
+useTexture.preload('/textures/wood_floor.jpg');
