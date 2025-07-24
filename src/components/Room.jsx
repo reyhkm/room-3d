@@ -1,46 +1,54 @@
-import React from 'react';
-import { Box } from '@react-three/drei';
+import * as THREE from 'three';
 
-function Room() {
-  const wallMaterial = <meshStandardMaterial color="#f0f0f0" roughness={0.8} metalness={0.1} />;
-  const floorMaterial = <meshStandardMaterial color="#a0a0a0" roughness={0.6} metalness={0.1} />;
-  const ceilingMaterial = <meshStandardMaterial color="#e0e0e0" roughness={0.8} metalness={0.1} />;
+const Wall = ({ position, rotation, size, color }) => (
+  <mesh position={position} rotation={rotation} receiveShadow>
+    <boxGeometry args={size} />
+    <meshStandardMaterial color={color} side={THREE.DoubleSide} />
+  </mesh>
+);
 
-  const roomSize = [6, 4, 6]; // Width, Height, Depth
+const Room = () => {
+  const roomSize = { width: 10, height: 5, depth: 10 };
 
   return (
     <group>
       {/* Floor */}
-      <Box args={[roomSize[0], 0.1, roomSize[2]]} position={[0, -0.05, 0]}>
-        {floorMaterial}
-      </Box>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        <planeGeometry args={[roomSize.width, roomSize.depth]} />
+        <meshStandardMaterial color="#5c5c5c" />
+      </mesh>
 
       {/* Ceiling */}
-      <Box args={[roomSize[0], 0.1, roomSize[2]]} position={[0, roomSize[1] + 0.05, 0]}>
-        {ceilingMaterial}
-      </Box>
+      <mesh position={[0, roomSize.height, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[roomSize.width, roomSize.depth]} />
+        <meshStandardMaterial color="#c7c7c7" />
+      </mesh>
 
       {/* Back Wall */}
-      <Box args={[roomSize[0], roomSize[1], 0.1]} position={[0, roomSize[1] / 2, -roomSize[2] / 2]}>
-        {wallMaterial}
-      </Box>
-
-      {/* Front Wall */}
-      <Box args={[roomSize[0], roomSize[1], 0.1]} position={[0, roomSize[1] / 2, roomSize[2] / 2]}>
-        {wallMaterial}
-      </Box>
+      <Wall 
+        position={[0, roomSize.height / 2, -roomSize.depth / 2]} 
+        rotation={[0, 0, 0]} 
+        size={[roomSize.width, roomSize.height, 0.1]} 
+        color="#a0a0a0" 
+      />
 
       {/* Left Wall */}
-      <Box args={[0.1, roomSize[1], roomSize[2]]} position={[-roomSize[0] / 2, roomSize[1] / 2, 0]}>
-        {wallMaterial}
-      </Box>
+      <Wall 
+        position={[-roomSize.width / 2, roomSize.height / 2, 0]} 
+        rotation={[0, Math.PI / 2, 0]} 
+        size={[roomSize.depth, roomSize.height, 0.1]} 
+        color="#b0b0b0" 
+      />
 
       {/* Right Wall */}
-      <Box args={[0.1, roomSize[1], roomSize[2]]} position={[roomSize[0] / 2, roomSize[1] / 2, 0]}>
-        {wallMaterial}
-      </Box>
+      <Wall 
+        position={[roomSize.width / 2, roomSize.height / 2, 0]} 
+        rotation={[0, -Math.PI / 2, 0]} 
+        size={[roomSize.depth, roomSize.height, 0.1]} 
+        color="#b0b0b0" 
+      />
     </group>
   );
-}
+};
 
 export default Room;

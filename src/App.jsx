@@ -1,35 +1,49 @@
-import React, { Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import Room from './components/Room';
-import PhotoFrame from './components/PhotoFrame';
-import RoomText from './components/RoomText';
+import { Loader } from '@react-three/drei';
+import Experience from './components/Experience';
 
 function App() {
+  const [uploadedImage, setUploadedImage] = useState(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <Canvas camera={{ position: [0, 2, 5], fov: 75 }}>
-      <Suspense fallback={null}>
-        {/* Lighting for the scene */}
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <spotLight position={[-10, 10, -10]} angle={0.3} penumbra={1} intensity={0.8} castShadow />
-
-        {/* Environment for realistic lighting and reflections */}
-        <Environment preset="city" />
-
-        {/* The 3D Room */}
-        <Room />
-
-        {/* Photo Frame on the back wall */}
-        <PhotoFrame position={[0, 1.5, -2.9]} rotation={[0, 0, 0]} />
-
-        {/* Text 'REYKAL ROOM' on the front wall */}
-        <RoomText position={[0, 2.5, 2.9]} rotation={[0, Math.PI, 0]} text="REYKAL ROOM" />
-
-        {/* OrbitControls for camera navigation */}
-        <OrbitControls enableZoom={true} enablePan={true} enableRotate={true} />
-      </Suspense>
-    </Canvas>
+    <>
+      <div className="ui-container">
+        <h1>3D Room Control</h1>
+        <label htmlFor="photo-upload" className="file-input-label">
+          Upload Your Photo
+        </label>
+        <input
+          id="photo-upload"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </div>
+      <div className="instructions">
+        Click and drag to look around
+      </div>
+      <Canvas
+        camera={{ position: [0, 1.6, 5], fov: 60 }}
+        shadows
+      >
+        <Suspense fallback={null}>
+          <Experience uploadedImage={uploadedImage} />
+        </Suspense>
+      </Canvas>
+      <Loader />
+    </>
   );
 }
 
